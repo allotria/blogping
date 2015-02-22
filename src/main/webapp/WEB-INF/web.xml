@@ -10,23 +10,38 @@
 
     <display-name>Atex Blog Ping</display-name>
 
-    <servlet>
-        <servlet-name>hello-atex</servlet-name>
-        <servlet-class>com.atex.blogping.HelloAtexServlet</servlet-class>
-    </servlet>
+    <filter>
+        <filter-name>guiceFilter</filter-name>
+        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+    </filter>
 
-    <servlet-mapping>
-        <servlet-name>hello-atex</servlet-name>
-        <url-pattern>/hello</url-pattern>
-    </servlet-mapping>
+    <filter-mapping>
+        <filter-name>guiceFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-    <servlet>
-        <servlet-name>blogping-servlet</servlet-name>
-        <servlet-class>com.atex.blogping.BlogpingServlet</servlet-class>
-    </servlet>
+    <listener>
+        <listener-class>com.atex.blogping.http.ServletContextListener</listener-class>
+    </listener>
 
-    <servlet-mapping>
-        <servlet-name>blogping-servlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+
+    <!--<servlet>-->
+        <!--<servlet-name>hello-atex</servlet-name>-->
+        <!--<servlet-class>com.atex.blogping.HelloAtexServlet</servlet-class>-->
+    <!--</servlet>-->
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>hello-atex</servlet-name>-->
+        <!--<url-pattern>/hello</url-pattern>-->
+    <!--</servlet-mapping>-->
+
+    <!--<servlet>-->
+        <!--<servlet-name>blogping-servlet</servlet-name>-->
+        <!--<servlet-class>com.atex.blogping.BlogpingServlet</servlet-class>-->
+    <!--</servlet>-->
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>blogping-servlet</servlet-name>-->
+        <!--<url-pattern>/</url-pattern>-->
+    <!--</servlet-mapping>-->
 </web-app>
