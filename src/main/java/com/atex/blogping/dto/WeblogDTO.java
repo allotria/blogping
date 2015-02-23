@@ -1,22 +1,17 @@
 package com.atex.blogping.dto;
 
-import javax.xml.bind.annotation.XmlType;
+import org.joda.time.DateTime;
 
-@XmlType(propOrder = {"name", "url", "when"})
-public class Weblog {
+public class WeblogDTO {
 
     private String name;
     private String url;
-    private int when;
+    private DateTime created;
 
-    public Weblog() {
-        // to make JAXB happy :-)
-    }
-
-    public Weblog(String name, String url, int when) {
+    public WeblogDTO(String name, String url) {
         this.name = name;
         this.url = url;
-        this.when = when;
+        this.created = DateTime.now();
     }
 
     public String getName() {
@@ -35,11 +30,7 @@ public class Weblog {
         this.url = url;
     }
 
-    public int getWhen() {
-        return when;
-    }
-
-    public void setWhen(int when) {
-        this.when = when;
+    public DateTime getCreated() {
+        return created;
     }
 }

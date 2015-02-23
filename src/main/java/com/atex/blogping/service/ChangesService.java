@@ -1,8 +1,9 @@
 package com.atex.blogping.service;
 
 import com.atex.blogping.dao.BlogpingDAO;
-import com.atex.blogping.dto.Changes;
-import com.atex.blogping.dto.Weblog;
+import com.atex.blogping.dto.WeblogDTO;
+import com.atex.blogping.jaxb.Changes;
+import com.atex.blogping.jaxb.ChangesFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -11,6 +12,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.util.List;
 
 @Singleton
 @Path("changes.xml")
@@ -26,9 +29,14 @@ public class ChangesService {
     @GET
     @Produces("application/xml")
     public Changes serveChanges(@Context HttpServletRequest httpServletRequest) {
-
-        Changes changes = new Changes();
-        changes.getWeblogs().add(new Weblog("foo", "http://foo.bar/blog", 1));
-        return null;
+        List<WeblogDTO> weblogs = blogpingDAO.getWeblogs();
+        Changes changes = null;
+        try {
+            changes = ChangesFactory.createChanges(weblogs);
+        } catch (DatatypeConfigurationException e) {
+            // TODO exception handling
+            e.printStackTrace();
+        }
+        return changes;
     }
 }
