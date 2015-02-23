@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ public class HelloAtexServletIT
 {
 
     @Test
+    @Ignore
     public void should_say_hello() throws IOException {
         HttpClient client = new HttpClient();
         HttpMethod get = new GetMethod("http://localhost:8080/hello");

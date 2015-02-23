@@ -24,8 +24,7 @@ public class ServletContextListener extends GuiceServletContextListener {
                 bind(ServletContainer.class).in(Singleton.class);
                 bind(BlogpingDAO.class).to(ListBasedBlogpingDAOImpl.class);
 
-                // (2) Change to using the GuiceContainer
-                serve("/*").with(GuiceContainer.class); // <<<<---
+                serve("/*").with(GuiceContainer.class);
             }
         });
     }
