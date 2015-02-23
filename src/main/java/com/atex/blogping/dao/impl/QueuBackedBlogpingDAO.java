@@ -2,7 +2,7 @@ package com.atex.blogping.dao.impl;
 
 import com.atex.blogping.dao.BlogpingDAO;
 import com.atex.blogping.dto.WeblogDTO;
-import com.atex.blogping.jaxb.Weblog;
+import com.google.inject.Singleton;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Data storage implementation using a ConcurrentLinkedQueue.
  */
+@Singleton
 public class QueuBackedBlogpingDAO implements BlogpingDAO {
 
     private ConcurrentLinkedQueue<WeblogDTO> weblogs = new ConcurrentLinkedQueue<>();
