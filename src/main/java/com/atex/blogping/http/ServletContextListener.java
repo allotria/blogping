@@ -13,6 +13,9 @@ import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ServletContextListener extends GuiceServletContextListener {
 
     @Override
@@ -33,8 +36,15 @@ public class ServletContextListener extends GuiceServletContextListener {
                 bind(BlogpingDAO.class).to(QueuBackedBlogpingDAO.class);
 
                 // serving all paths through Jerseys Guice integration
-                serve("/*").with(GuiceContainer.class);
+                filter("/*").through(GuiceContainer.class, staticContentFilterParams());
             }
         });
+    }
+
+    private Map<String, String> staticContentFilterParams() {
+        Map<String, String> params = new HashMap<>();
+        params.put("com.sun.jersey.config.property.WebPageContentRegex",
+                "/client/.*");
+        return params;
     }
 }

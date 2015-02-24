@@ -25,23 +25,4 @@
     </listener>
 
 
-    <!--<servlet>-->
-        <!--<servlet-name>hello-atex</servlet-name>-->
-        <!--<servlet-class>com.atex.blogping.HelloAtexServlet</servlet-class>-->
-    <!--</servlet>-->
-
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>hello-atex</servlet-name>-->
-        <!--<url-pattern>/hello</url-pattern>-->
-    <!--</servlet-mapping>-->
-
-    <!--<servlet>-->
-        <!--<servlet-name>blogping-servlet</servlet-name>-->
-        <!--<servlet-class>com.atex.blogping.BlogpingServlet</servlet-class>-->
-    <!--</servlet>-->
-
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>blogping-servlet</servlet-name>-->
-        <!--<url-pattern>/</url-pattern>-->
-    <!--</servlet-mapping>-->
 </web-app>

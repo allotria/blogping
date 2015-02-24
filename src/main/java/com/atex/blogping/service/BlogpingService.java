@@ -32,7 +32,7 @@ public class BlogpingService {
 
         saveWeblog(name, url);
 
-        return "Thanks for the ping.";
+        return "Thanks for the ping with GET.";
     }
 
 
@@ -45,7 +45,7 @@ public class BlogpingService {
 
         saveWeblog(name, url);
 
-        return "Thanks for the ping.";
+        return "Thanks for the ping with POST.";
     }
 
     private void saveWeblog(String name, String url) {
