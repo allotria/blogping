@@ -23,7 +23,7 @@ import java.util.List;
 @XmlType(propOrder = {"version", "updated", "count", "weblogs"})
 public class Changes {
 
-    private XMLGregorianCalendar updated;
+    private String updated;
     private int count;
     private List<Weblog> weblogs = new ArrayList<>();
 
@@ -33,11 +33,11 @@ public class Changes {
     }
 
     @XmlAttribute
-    public XMLGregorianCalendar getUpdated() {
+    public String getUpdated() {
         return updated;
     }
 
-    public void setUpdated(XMLGregorianCalendar updated) {
+    public void setUpdated(String updated) {
         this.updated = updated;
     }
 

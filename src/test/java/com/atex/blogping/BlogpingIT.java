@@ -1,6 +1,7 @@
 package com.atex.blogping;
 
 
+import com.atex.blogping.jaxb.Responses;
 import junit.framework.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -8,6 +9,8 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static junit.framework.Assert.assertTrue;
 
 public class BlogpingIT {
 
@@ -23,7 +26,7 @@ public class BlogpingIT {
 
         try {
             client.executeMethod(ping);
-            Assert.assertEquals("Thanks for the ping.", ping.getResponseBodyAsString());
+            assertTrue(ping.getResponseBodyAsString().contains(Responses.OK.getMessage()));
         } finally {
             ping.releaseConnection();
         }
@@ -32,8 +35,8 @@ public class BlogpingIT {
 
         try {
             client.executeMethod(changes);
-            Assert.assertTrue(changes.getResponseBodyAsString().contains(name));
-            Assert.assertTrue(changes.getResponseBodyAsString().contains(url));
+            assertTrue(changes.getResponseBodyAsString().contains(name));
+            assertTrue(changes.getResponseBodyAsString().contains(url));
         } finally {
             changes.releaseConnection();
         }

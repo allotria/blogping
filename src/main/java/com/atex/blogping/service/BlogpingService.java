@@ -2,13 +2,12 @@ package com.atex.blogping.service;
 
 import com.atex.blogping.dao.BlogpingDAO;
 import com.atex.blogping.dto.WeblogDTO;
+import com.atex.blogping.jaxb.Response;
+import com.atex.blogping.jaxb.Responses;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.servlet.RequestParameters;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 
 @Singleton
 @Path("pingSiteForm")
@@ -24,28 +23,30 @@ public class BlogpingService {
 
 
     @GET
-    public String pingSiteFormGet(@QueryParam("name") String name,
-                                  @QueryParam("url") String url,
-                                  @QueryParam("changesURL") String changesURL) {
+    @Produces("application/xml")
+    public Response pingSiteFormGet(@QueryParam("name") String name,
+                                    @QueryParam("url") String url,
+                                    @QueryParam("changesURL") String changesURL) {
 
-            // For this implementation we ignore the 'changesURL' parameter
+        // For this implementation we ignore the 'changesURL' parameter
 
         saveWeblog(name, url);
 
-        return "Thanks for the ping with GET.";
+        return Responses.OK;
     }
 
 
     @POST
-    public String pingSiteFormPost(@FormParam("name") String name,
-                                   @FormParam("url") String url,
-                                   @FormParam("changesURL") String changesURL) {
+    @Produces("application/xml")
+    public Response pingSiteFormPost(@FormParam("name") String name,
+                                     @FormParam("url") String url,
+                                     @FormParam("changesURL") String changesURL) {
 
-        // changesURL is ignored here as well
+        // changesURL is ignoredhere as well
 
         saveWeblog(name, url);
 
-        return "Thanks for the ping with POST.";
+        return Responses.OK;
     }
 
     private void saveWeblog(String name, String url) {

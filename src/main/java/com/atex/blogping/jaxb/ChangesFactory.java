@@ -2,20 +2,22 @@ package com.atex.blogping.jaxb;
 
 import com.atex.blogping.dto.WeblogDTO;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
 
 public class ChangesFactory {
 
-    public static final Changes createChanges(List<WeblogDTO> weblogs) throws DatatypeConfigurationException {
-        DateTime now = DateTime.now();
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss 'GMT'");
+    public static final String TIME_ZONE_ID_GMT = "GMT";
 
+    public static final Changes createChanges(List<WeblogDTO> weblogs) {
         Changes changes = new Changes();
-        changes.setUpdated(toXmlGregorianCalendar(now));
+
+        DateTime now = getFormattedTimeNow(changes);
 
         for (WeblogDTO dto : weblogs) {
             changes.getWeblogs().add(createWeblog(dto, now));
@@ -24,8 +26,10 @@ public class ChangesFactory {
         return changes;
     }
 
-    private static XMLGregorianCalendar toXmlGregorianCalendar(DateTime now) throws DatatypeConfigurationException {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(now.toGregorianCalendar());
+    private static DateTime getFormattedTimeNow(Changes changes) {
+        DateTime now = DateTime.now().withZone(DateTimeZone.forID(TIME_ZONE_ID_GMT));
+        changes.setUpdated(now.toString(DATE_TIME_FORMATTER));
+        return now;
     }
 
     private static Weblog createWeblog(final WeblogDTO dto, final DateTime updated) {

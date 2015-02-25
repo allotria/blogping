@@ -12,7 +12,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.List;
 
 @Singleton
@@ -30,13 +29,6 @@ public class ChangesService {
     @Produces("application/xml")
     public Changes serveChanges(@Context HttpServletRequest httpServletRequest) {
         List<WeblogDTO> weblogs = blogpingDAO.getWeblogs();
-        Changes changes = null;
-        try {
-            changes = ChangesFactory.createChanges(weblogs);
-        } catch (DatatypeConfigurationException e) {
-            // TODO exception handling
-            e.printStackTrace();
-        }
-        return changes;
+        return ChangesFactory.createChanges(weblogs);
     }
 }
