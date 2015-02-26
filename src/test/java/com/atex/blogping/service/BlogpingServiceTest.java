@@ -4,6 +4,7 @@ import com.atex.blogping.dao.BlogpingDAO;
 import com.atex.blogping.dto.WeblogDTO;
 import com.atex.blogping.jaxb.Response;
 import com.atex.blogping.jaxb.Responses;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,10 +12,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,19 +48,94 @@ public class BlogpingServiceTest {
         verify(blogpingDAO).saveWeblog(Matchers.<WeblogDTO>any());
     }
 
+    @Test
+    public void shouldReturnNameMustNotBeEmptyOnEmptyString() {
+        Request request = givenRequestWithEmptyName();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.NAME_MUST_NOT_BE_EMPTY, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnNameMustNotBeEmptyOnNameNull() {
+        Request request = givenRequestWithNameNull();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.NAME_MUST_NOT_BE_EMPTY, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnNameTooLong() {
+        Request request = givenRequestWithNameTooLong();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.NAME_TOO_LONG, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
     private Request givenValidRequest() {
         return new Request("allotria", "http://www.allotria.ch/blog", "http://www.allotria.ch/blog/atom.xml");
     }
 
+    private Request givenRequestWithNameNull() {
+        return givenValidRequest().setName(null);
+    }
+
+    private Request givenRequestWithEmptyName() {
+        return givenValidRequest().setName("");
+    }
+
+    private Request givenRequestWithNameTooLong() {
+        return givenValidRequest().setName(RandomStringUtils.randomAlphabetic(1025));
+    }
+
     private static class Request {
-        public final String name;
-        public final String url;
-        public final String changesURL;
+        private String name;
+        private String url;
+        private String changesURL;
 
         private Request(String name, String url, String changesURL) {
             this.name = name;
             this.url = url;
             this.changesURL = changesURL;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Request setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public Request setUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public String getChangesURL() {
+            return changesURL;
+        }
+
+        public Request setChangesURL(String changesURL) {
+            this.changesURL = changesURL;
+            return this;
         }
     }
 }
