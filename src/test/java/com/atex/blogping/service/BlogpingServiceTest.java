@@ -37,8 +37,32 @@ public class BlogpingServiceTest {
     }
 
     @Test
-    public void shouldAcceptRequestAndReturnOk() {
+    public void get_shouldAcceptRequestAndReturnOk() {
         Request valid = givenValidRequest();
+
+        // when
+        Response response = service.pingSiteFormGet(valid.name, valid.url, valid.changesURL);
+
+        // then
+        assertEquals(Responses.OK, response);
+        verify(blogpingDAO).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void post_shouldAcceptRequestAndReturnOk() {
+        Request valid = givenValidRequest();
+
+        // when
+        Response response = service.pingSiteFormPost(valid.name, valid.url, valid.changesURL);
+
+        // then
+        assertEquals(Responses.OK, response);
+        verify(blogpingDAO).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldAcceptRequestAndReturnOkForHttpsUrl() {
+        Request valid = givenValidRequestWithHttpsUrl();
 
         // when
         Response response = service.pingSiteFormGet(valid.name, valid.url, valid.changesURL);
@@ -84,8 +108,75 @@ public class BlogpingServiceTest {
         verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
     }
 
+    @Test
+    public void shouldReturnUrlMustNotBeEmptyOnEmptyString() {
+        Request request = givenRequestWithEmptyUrl();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.URL_MUST_NOT_BE_EMPTY, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnUrlMustNotBeEmptyOnUrlNull() {
+        Request request = givenRequestWithUrlNull();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.URL_MUST_NOT_BE_EMPTY, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnUrlTooLong() {
+        Request request = givenRequestWithUrlTooLong();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.URL_TOO_LONG, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnUrlMustStartWithHttpS() {
+        Request request = givenRequestWhereUrlDoesNotStartWithHttp();
+
+        // when
+        Response response = service.pingSiteFormGet(request.name, request.url, request.changesURL);
+
+        // then
+        assertEquals(Responses.URL_MUST_START_WITH_HTTP_S, response);
+        verify(blogpingDAO, never()).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+    @Test
+    public void shouldReturnInternalServerError() {
+        // given
+        Request valid = givenValidRequest();
+        willThrow(IllegalArgumentException.class).given(blogpingDAO).saveWeblog(Matchers.<WeblogDTO>any());
+
+        // when
+        Response response = service.pingSiteFormGet(valid.name, valid.url, valid.changesURL);
+
+        // then
+        assertEquals(Responses.INTERNAL_SERVER_ERROR, response);
+        verify(blogpingDAO).saveWeblog(Matchers.<WeblogDTO>any());
+    }
+
+
     private Request givenValidRequest() {
         return new Request("allotria", "http://www.allotria.ch/blog", "http://www.allotria.ch/blog/atom.xml");
+    }
+
+    private Request givenValidRequestWithHttpsUrl() {
+        return new Request("allotria", "https://www.allotria.ch/blog", "https://www.allotria.ch/blog/atom.xml");
     }
 
     private Request givenRequestWithNameNull() {
@@ -98,6 +189,22 @@ public class BlogpingServiceTest {
 
     private Request givenRequestWithNameTooLong() {
         return givenValidRequest().setName(RandomStringUtils.randomAlphabetic(1025));
+    }
+
+    private Request givenRequestWithUrlNull() {
+        return givenValidRequest().setUrl(null);
+    }
+
+    private Request givenRequestWithEmptyUrl() {
+        return givenValidRequest().setUrl("");
+    }
+
+    private Request givenRequestWithUrlTooLong() {
+        return givenValidRequest().setUrl("http://" + RandomStringUtils.randomAlphabetic(249));
+    }
+
+    private Request givenRequestWhereUrlDoesNotStartWithHttp() {
+        return givenValidRequest().setUrl("www.example.com/blog");
     }
 
     private static class Request {
