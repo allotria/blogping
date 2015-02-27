@@ -14,21 +14,30 @@ public class ChangesFactory {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss 'GMT'");
     public static final String TIME_ZONE_ID_GMT = "GMT";
 
-    public static final Changes createChanges(List<WeblogDTO> weblogs) {
-        Changes changes = new Changes();
+    public static final Changes createChanges(List<WeblogDTO> weblogs, int count) {
+        final Changes changes = new Changes();
 
-        DateTime now = getFormattedTimeNow(changes);
+        DateTime now = getGMTTimeNow(changes);
 
-        for (WeblogDTO dto : weblogs) {
-            changes.getWeblogs().add(createWeblog(dto, now));
-        }
+        changes.setCount(count);
+        setUpdateTime(changes, now);
+        addWeblogs(changes, weblogs, now);
 
         return changes;
     }
 
-    private static DateTime getFormattedTimeNow(Changes changes) {
-        DateTime now = DateTime.now().withZone(DateTimeZone.forID(TIME_ZONE_ID_GMT));
+    private static void addWeblogs(final Changes changes, final List<WeblogDTO> weblogs, final DateTime now) {
+        for (WeblogDTO dto : weblogs) {
+            changes.getWeblogs().add(createWeblog(dto, now));
+        }
+    }
+
+    private static void setUpdateTime(final Changes changes, DateTime now) {
         changes.setUpdated(now.toString(DATE_TIME_FORMATTER));
+    }
+
+    private static DateTime getGMTTimeNow(Changes changes) {
+        DateTime now = DateTime.now().withZone(DateTimeZone.forID(TIME_ZONE_ID_GMT));
         return now;
     }
 

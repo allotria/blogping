@@ -6,18 +6,19 @@ import com.atex.blogping.jaxb.Changes;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.runners.*;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -78,6 +79,44 @@ public class ChangesServiceTest {
         verify(blogpingDAO).getWeblogs();
     }
 
+    @Test
+    public void shouldReturnTwoChanges() {
+        // given
+        given(blogpingDAO.getWeblogs()).willReturn(twoChanges());
+
+        // when
+        Changes changes = service.serveChanges(mockHttpRequest());
+
+        // then
+        assertTrue(StringUtils.isNotEmpty(changes.getUpdated()));
+        assertEquals(0, changes.getCount());
+        assertEquals(VERSION_STRING, changes.getVersion());
+
+        assertFalse(changes.getWeblogs().isEmpty());
+        assertEquals(2, changes.getWeblogs().size());
+        assertEquals("allotria", changes.getWeblogs().get(0).getName());
+        assertEquals("http://www.allotria.ch", changes.getWeblogs().get(0).getUrl());
+        assertEquals("kopr", changes.getWeblogs().get(1).getName());
+        assertEquals("http://www.kopr.se", changes.getWeblogs().get(1).getUrl());
+        verify(blogpingDAO).getWeblogs();
+    }
+
+    @Test
+    public void shouldIncrementCount() {
+        // given
+        given(blogpingDAO.getWeblogs()).willReturn(emptyChangesList()).willReturn(emptyChangesList());
+
+        // when
+        Changes changes = service.serveChanges(mockHttpRequest());
+        int count1 = changes.getCount();
+        changes = service.serveChanges(mockHttpRequest());
+        int count2 = changes.getCount();
+
+        // then
+        assertTrue(count1 + 1 == count2);
+        verify(blogpingDAO, times(2)).getWeblogs();
+    }
+
     private HttpServletRequest mockHttpRequest() {
         return mock(HttpServletRequest.class);
     }
@@ -91,5 +130,12 @@ public class ChangesServiceTest {
         WeblogDTO dto = new WeblogDTO("allotria", "http://www.allotria.ch");
         one.add(dto);
         return one;
+    }
+
+    private List<WeblogDTO> twoChanges() {
+        List<WeblogDTO> weblogs = new ArrayList<>();
+        weblogs.add(new WeblogDTO("allotria", "http://www.allotria.ch"));
+        weblogs.add(new WeblogDTO("kopr", "http://www.kopr.se"));
+        return weblogs;
     }
 }

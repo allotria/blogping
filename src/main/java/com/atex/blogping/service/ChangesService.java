@@ -13,10 +13,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton
 @Path("changes.xml")
 public class ChangesService {
+
+    private final AtomicInteger updateCounter = new AtomicInteger(0);
 
     private final BlogpingDAO blogpingDAO;
 
@@ -29,6 +32,6 @@ public class ChangesService {
     @Produces("application/xml")
     public Changes serveChanges(@Context HttpServletRequest httpServletRequest) {
         List<WeblogDTO> weblogs = blogpingDAO.getWeblogs();
-        return ChangesFactory.createChanges(weblogs);
+        return ChangesFactory.createChanges(weblogs, updateCounter.getAndIncrement());
     }
 }
