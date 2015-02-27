@@ -1,20 +1,26 @@
 package com.atex.blogping;
 
 
+import com.atex.blogping.jaxb.Changes;
 import com.atex.blogping.jaxb.Responses;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.io.StringReader;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 
 public class BlogpingIT {
 
@@ -32,7 +38,7 @@ public class BlogpingIT {
 
         // then
         assertTrue(response.contains(Responses.OK.getMessage()));
-        String changesResponse = thenGetChanges();
+        String changesResponse = getChanges();
         assertTrue(changesResponse.contains(name));
         assertTrue(changesResponse.contains(url));
     }
@@ -49,8 +55,8 @@ public class BlogpingIT {
         String postResponse = whenExecutePost(ping);
 
         // then
+        String changesResponse = getChanges();
         assertTrue(postResponse.contains(Responses.OK.getMessage()));
-        String changesResponse = thenGetChanges();
         assertTrue(changesResponse.contains(name));
         assertTrue(changesResponse.contains(url));
     }
@@ -58,58 +64,82 @@ public class BlogpingIT {
 
     @Test
     public void send_missing_name_parameter() throws IOException {
+        // given
         String url = "http://" + RandomStringUtils.randomAlphabetic(30);
-
         GetMethod ping = givenGetMethod(null, url);
 
+        // when
         String getResponse = whenExecuteGet(ping);
 
-        String changesResponse = thenGetChanges();
-
+        // then
+        String changesResponse = getChanges();
         assertTrue(getResponse.contains(Responses.NAME_MUST_NOT_BE_EMPTY.getMessage()));
         assertFalse(changesResponse.contains(url));
     }
 
     @Test
     public void send_empty_name_parameter() throws IOException {
+        // given
         String url = "http://" + RandomStringUtils.randomAlphabetic(30);
-
         GetMethod ping = givenGetMethod("", url);
 
+        // when
         String getResponse = whenExecuteGet(ping);
 
-        String changesResponse = thenGetChanges();
-
+        // then
+        String changesResponse = getChanges();
         assertTrue(getResponse.contains(Responses.NAME_MUST_NOT_BE_EMPTY.getMessage()));
         assertFalse(changesResponse.contains(url));
     }
 
     @Test
     public void send_missing_url_parameter() throws IOException {
+        // given
         String name = RandomStringUtils.randomAlphabetic(30);
-
         GetMethod ping = givenGetMethod(name, null);
 
+        // when
         String getResponse = whenExecuteGet(ping);
 
-        String changesResponse = thenGetChanges();
-
+        // then
+        String changesResponse = getChanges();
         assertTrue(getResponse.contains(Responses.URL_MUST_NOT_BE_EMPTY.getMessage()));
         assertFalse(changesResponse.contains(name));
     }
 
     @Test
     public void send_empty_url_parameter() throws IOException {
+        // given
         String name = RandomStringUtils.randomAlphabetic(30);
-
         GetMethod ping = givenGetMethod(name, "");
 
+        // when
         String getResponse = whenExecuteGet(ping);
 
-        String changesResponse = thenGetChanges();
-
+        // then
+        String changesResponse = getChanges();
         assertTrue(getResponse.contains(Responses.URL_MUST_NOT_BE_EMPTY.getMessage()));
         assertFalse(changesResponse.contains(name));
+    }
+
+    @Test
+    public void subsequent_calls_to_get_changes_increment_count() throws IOException, JAXBException {
+        // given
+        Changes changes1 = getChangesAsJAXBObject();
+
+        // when
+        Changes changes2 = getChangesAsJAXBObject();
+
+        // then
+        assertThat(changes1.getCount(), is(lessThan(changes2.getCount())));
+    }
+
+    private Changes getChangesAsJAXBObject() throws JAXBException, IOException {
+        String changesResponse = getChanges();
+        JAXBContext jaxbContext = JAXBContext.newInstance(Changes.class);
+        Changes changes = (Changes) jaxbContext.createUnmarshaller().unmarshal(new StringReader(changesResponse));
+
+        return changes;
     }
 
     private GetMethod givenGetMethod(String name, String url) throws URIException {
@@ -170,7 +200,7 @@ public class BlogpingIT {
     }
 
 
-    private String thenGetChanges() throws IOException {
+    private String getChanges() throws IOException {
         GetMethod changes = new GetMethod("http://localhost:8080/changes.xml");
 
         try {
