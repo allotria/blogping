@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -151,12 +152,12 @@ public class BlogpingIT {
         return new GetMethod(sb.toString());
     }
 
-    private void addParam(final StringBuilder sb, String parameterName, String parameterValue) {
+    private void addParam(final StringBuilder sb, String parameterName, String parameterValue) throws URIException {
         if (parameterValue != null) {
             addParameterDelimiter(sb);
             sb.append(parameterName);
             sb.append("=");
-            sb.append(parameterValue);
+            sb.append(URIUtil.encodeWithinQuery(parameterValue));
         }
     }
 
