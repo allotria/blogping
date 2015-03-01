@@ -9,7 +9,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 
-public class QueuBackedBlogpingDAOTest {
+public class QueueBackedBlogpingDAOTest {
 
     private BlogpingDAO dao;
 
@@ -56,7 +56,7 @@ public class QueuBackedBlogpingDAOTest {
 
 
     private void givenBlogpingDAO() {
-        dao = new QueuBackedBlogpingDAO();
+        dao = new QueueBackedBlogpingDAO();
     }
 
     private BlogpingDAO when() {

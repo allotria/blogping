@@ -2,7 +2,7 @@ package com.atex.blogping.http;
 
 
 import com.atex.blogping.dao.BlogpingDAO;
-import com.atex.blogping.dao.impl.QueuBackedBlogpingDAO;
+import com.atex.blogping.dao.impl.QueueBackedBlogpingDAO;
 import com.atex.blogping.service.BlogpingService;
 import com.atex.blogping.service.ChangesService;
 import com.google.inject.Guice;
@@ -33,7 +33,7 @@ public class ServletContextListener extends GuiceServletContextListener {
                 bind(ChangesService.class);
 
                 // binding our resource interfaces to an actual implementation
-                bind(BlogpingDAO.class).to(QueuBackedBlogpingDAO.class);
+                bind(BlogpingDAO.class).to(QueueBackedBlogpingDAO.class);
 
                 // serving all paths through Jerseys Guice integration
                 filter("/*").through(GuiceContainer.class, staticContentFilterParams());

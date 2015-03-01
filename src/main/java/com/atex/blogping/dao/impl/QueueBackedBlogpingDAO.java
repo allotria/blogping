@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Data storage implementation using a ConcurrentLinkedQueue.
  */
 @Singleton
-public class QueuBackedBlogpingDAO implements BlogpingDAO {
+public class QueueBackedBlogpingDAO implements BlogpingDAO {
 
     private ConcurrentLinkedQueue<WeblogDTO> weblogs = new ConcurrentLinkedQueue<>();
 
