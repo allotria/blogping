@@ -73,7 +73,7 @@ public class BlogpingService {
     private Response validateParameters(String name, String url) {
 
         if (isEmpty(url)) {
-            return Responses.URL_MUST_NOT_BE_EMPTY;
+            return Responses.INTERNAL_SERVER_ERROR; // URL_MUST_NOT_BE_EMPTY
         }
 
         if (!startsWithAny(url, HTTP, HTTPS)) {
