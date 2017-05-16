@@ -6,6 +6,7 @@ import com.atex.blogping.jaxb.Response;
 import com.atex.blogping.jaxb.Responses;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.*;
@@ -52,6 +53,13 @@ public class BlogpingService {
         return validateAndSaveWeblog(name, url);
     }
 
+    @DELETE
+    public Response deleteSite(@QueryParam("name") String name, @QueryParam("url") String url) {
+
+        validateParameters(name, url);
+        return deleteWeblog(name, url);
+    }
+
     private Response validateAndSaveWeblog(String name, String url) {
 
         Response error = validateParameters(name, url);
@@ -63,6 +71,17 @@ public class BlogpingService {
         try {
 
             blogpingDAO.saveWeblog(new WeblogDTO(name, url));
+            return Responses.OK;
+
+        } catch (Exception e) {
+            return Responses.INTERNAL_SERVER_ERROR;
+        }
+    }
+
+    private Response deleteWeblog(String name, String url) {
+        try {
+
+            blogpingDAO.deleteWeblog(new WeblogDTO(name, url));
             return Responses.OK;
 
         } catch (Exception e) {
